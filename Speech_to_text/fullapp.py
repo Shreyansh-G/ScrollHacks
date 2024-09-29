@@ -11,7 +11,7 @@ s3 = boto3.client('s3')
 transcribe = boto3.client('transcribe')
 translate = boto3.client('translate')
 
-# Specify your S3 bucket name
+# Specify your S3 bucket where audio files is stored
 bucket_name = 'speech-audio'
 
 @app.route('/transcribe', methods=['POST'])
@@ -48,12 +48,12 @@ def get_transcript(job_name):
         response = transcribe.get_transcription_job(TranscriptionJobName=job_name)
         transcript_uri = response['TranscriptionJob']['Transcript']['TranscriptFileUri']
 
-        # Fetch the transcript from the provided URI
+        # Fetch the transcript from URI
         transcript_response = requests.get(transcript_uri)
         transcript_data = transcript_response.json()
         original_text = transcript_data['results']['transcripts'][0]['transcript']
 
-        # Translate the transcribed text to English
+        # Translate text to English
         translated_text = translate_text(original_text, target_language='en')
 
         return jsonify({
