@@ -25,8 +25,8 @@ def transcribe_audio():
         response = transcribe.start_transcription_job(
             TranscriptionJobName=job_name,
             Media={'MediaFileUri': f's3://{bucket_name}/{audio_key}'},
-            MediaFormat='wav',  # Change to 'mp3' if your audio is in mp3 format
-            LanguageCode='hi-IN'  # Hindi language code
+            MediaFormat='wav',  # Change to your audio format
+            LanguageCode='hi-IN'  # Language in audio
         )
         return jsonify({"job_name": job_name, "message": "Transcription job started"}), 200
     except ClientError as e:
@@ -69,7 +69,7 @@ def translate_text(text, target_language):
         # Translate text from Hindi to English
         response = translate.translate_text(
             Text=text,
-            SourceLanguageCode='hi',  # Source language code for Hindi
+            SourceLanguageCode='hi',  # Source language Hindi
             TargetLanguageCode=target_language  # Target language is English
         )
         return response['TranslatedText']
