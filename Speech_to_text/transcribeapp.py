@@ -16,15 +16,15 @@ bucket_name = 'speech-audio'
 def transcribe_audio():
     data = request.json
     audio_key = data.get('s3_uri').replace(f's3://{bucket_name}/', '')  # Extract object key from S3 URI
-    job_name = f'transcription-job-{int(time.time())}'  # Unique job name using timestamp
+    job_name = f'transcription-job-{int(time.time())}'  
 
     try:
         # Start transcription job
         response = transcribe.start_transcription_job(
             TranscriptionJobName=job_name,
             Media={'MediaFileUri': f's3://{bucket_name}/{audio_key}'},
-            MediaFormat='wav',  # Change to 'mp3' if your audio is in mp3 format
-            LanguageCode='hi-IN'  # Hindi language code
+            MediaFormat='wav',  # Change to your audio  format
+            LanguageCode='hi-IN'  # Hindi language Code
         )
         return jsonify({"job_name": job_name, "message": "Transcription job started"}), 200
     except ClientError as e:
@@ -49,4 +49,4 @@ def get_transcript(job_name):
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
