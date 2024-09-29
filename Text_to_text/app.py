@@ -10,7 +10,7 @@ model_name = "ai4bharat/indictrans2-indic-en-dist-200M"
 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 model = AutoModelForSeq2SeqLM.from_pretrained(model_name, trust_remote_code=True)
 
-# Initialize the IndicProcessor for preprocessing and postprocessing
+# Initialize the IndicProcessor
 ip = IndicProcessor(inference=True)
 
 # Supported languages
@@ -18,10 +18,9 @@ supported_languages = {
     "Hindi": "hin_Deva",
     "Tamil": "tam_Taml",
     "Malayalam": "mal_Mlym",
-    # Add more languages as needed
 }
 
-# Function to dynamically choose the source language and translate
+# Function to choose the source language and translate
 def translate_sentences(input_sentences, src_lang_name):
     src_lang = supported_languages.get(src_lang_name)
     if not src_lang:
@@ -29,15 +28,12 @@ def translate_sentences(input_sentences, src_lang_name):
     
     tgt_lang = "eng_Latn"  # Translate to English
     
-    # Preprocess the input sentences
     batch = ip.preprocess_batch(input_sentences, src_lang=src_lang, tgt_lang=tgt_lang)
     
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
     
-    # Tokenize the sentences and generate input encodings
     inputs = tokenizer(batch, truncation=True, padding="longest", return_tensors="pt").to(DEVICE)
     
-    # Generate translations using the model
     with torch.no_grad():
         generated_tokens = model.generate(
             **inputs, use_cache=True, min_length=0, max_length=256, num_beams=5, num_return_sequences=1
